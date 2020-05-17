@@ -13,7 +13,7 @@
             <v-card-subtitle class="text-right mt-5">
                 <div class="mb-4">Author: {{ post.author.name }}</div>
                 <v-avatar>
-                    <img src="//ssl.gstatic.com/s2/oz/images/sge/grey_silhouette.png" alt />
+                    <img :src="avatarSrc" alt />
                 </v-avatar>
             </v-card-subtitle>
         </v-card>
@@ -22,7 +22,7 @@
 
 <script>
 // @ is an alias to /src
-import { ref } from '@vue/composition-api'
+import { ref, computed } from '@vue/composition-api'
 import axios from 'axios'
 
 export default {
@@ -44,10 +44,19 @@ export default {
             }
         }
 
+        const avatarSrc = computed(() => {
+            if (post.value.author.avatar) {
+                return `data:image/jpeg;base64,${post.value.author.avatar.toString('base64')}`
+            }
+
+            return '//ssl.gstatic.com/s2/oz/images/sge/grey_silhouette.png'
+        })
+
         getPost()
 
         return {
             post,
+            avatarSrc,
         }
     },
     

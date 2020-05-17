@@ -3,14 +3,15 @@
         <h1>Your profile</h1>
         <v-card-text>
             <v-form>
-                <v-avatar size="60px" class="mx-3 mb-5">
-                    <img src="//ssl.gstatic.com/s2/oz/images/sge/grey_silhouette.png" alt />
+                <v-avatar size="80px" class="mx-3 mb-5">
+                    <img :src="avatarSrc" alt="User avatar" />
                 </v-avatar>
                 <v-file-input
                     accept="image/png, image/jpeg, image/bmp"
                     placeholder="Pick an avatar"
                     prepend-icon="mdi-camera"
                     label="Avatar"
+                    name="avatar"
                     @change="handleAvatarInput"
                 />
                 <v-text-field
@@ -40,6 +41,7 @@
 
 <script>
 import axios from 'axios'
+import { computed } from '@vue/composition-api'
 import { userData, getUser } from '@/composables/useAuth'
 import { emailRules, requiredRule } from '@/utils/validators'
 
@@ -49,10 +51,12 @@ export default {
 
         async function handleAvatarInput(file) {
             try {
-                await axios({ url: '/me/avatar', file, method: 'POST' })
+                const formData = new FormData()
+                formData.append('avatar', file)
+                await axios({ url: '/me/avatar', data: formData, method: 'POST', headers: { 'content-type': 'multipart/form-data' } })
                 await getUser()
             } catch (e) {
-                console.log({ e })
+                console.log(e.message)
             }
         }
 
@@ -76,12 +80,21 @@ export default {
             }
         }
 
+        const avatarSrc = computed(() => {
+            if (user.value.avatar) {
+                return `data:image/jpeg;base64,${user.value.avatar.toString('base64')}`
+            }
+
+            return '//ssl.gstatic.com/s2/oz/images/sge/grey_silhouette.png'
+        })
+
         return {
             user: user.value,
             handleSubmitForm,
             handleAvatarInput,
             emailRules,
             requiredRule,
+            avatarSrc,
         }
     },
 }
