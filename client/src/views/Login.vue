@@ -9,7 +9,7 @@
                                 <v-toolbar-title>Login form</v-toolbar-title>
                             </v-toolbar>
                             <v-card-text>
-                                <v-form>
+                                <v-form ref="form">
                                     <v-text-field
                                         label="Email"
                                         name="email"
@@ -53,15 +53,17 @@ export default {
         const password = ref('')
 
         const handleSubmitForm = async () => {
-            const { $router, $toasted } = context.root
-            try {
-                await login({ email: email.value, password: password.value })
-                $router.push('/')
-                $toasted.success('Welcome back!', { duration: 3000 })
-            } catch (e) {
-                $toasted.error('Error has occured. Try again.', {
-                    duration: 3000,
-                })
+            if (context.refs.form.validate()) {
+                const { $router, $toasted } = context.root
+                try {
+                    await login({ email: email.value, password: password.value })
+                    $router.push('/')
+                    $toasted.success('Welcome back!', { duration: 3000 })
+                } catch (e) {
+                    $toasted.error('Error has occured. Try again.', {
+                        duration: 3000,
+                    })
+                }
             }
         }
 

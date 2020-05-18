@@ -25,35 +25,33 @@ function setToken(token) {
     state.token = token
 }
 
-//action
-async function login(user) {
-    try {
-        const {
-            data
-        } = await axios({
-            url: '/login',
-            data: user,
-            method: 'POST'
-        })
-        setAuthUser(data.user, data.token)
-    } catch (e) {
-        removeAuthUser()
-    }
+//actions
+function login(user) {
+    return new Promise((resolve, reject) => {
+        axios({ url: '/login', data: user, method: 'POST' })
+            .then(({ data }) => {
+                setAuthUser(data.user, data.token)
+                resolve()
+            })
+            .catch(e => {
+                removeAuthUser()
+                reject(e)
+            })
+    })
 }
 
-async function signup(user) {
-    try {
-        const {
-            data
-        } = await axios({
-            url: '/me',
-            data: user,
-            method: 'POST'
-        })
-        setAuthUser(data.user, data.token)
-    } catch (e) {
-        removeAuthUser()
-    }
+function signup(user) {
+    return new Promise((resolve, reject) => {
+        axios({ url: '/me', data: user, method: 'POST' })
+            .then(({ data }) => {
+                setAuthUser(data.user, data.token)
+                resolve()
+            })
+            .catch(e => {
+                removeAuthUser()
+                reject(e)
+            })
+    })
 }
 
 async function logout() {
